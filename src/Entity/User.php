@@ -15,6 +15,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface
 {
     /**
+     * @var int
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,31 +24,47 @@ class User implements UserInterface
     private $id;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
 
     /**
+     * @var array
+     *
      * @ORM\Column(type="json")
      */
     private $roles = [];
 
     /**
-     * @var string The hashed password
+     * @var string
+     *
      * @ORM\Column(type="string")
      */
     private $password;
 
+    /**
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @return string|null
+     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    /**
+     * @param string $email
+     *
+     * @return $this
+     */
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -76,6 +94,10 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
+    /**
+     * @param array $roles
+     * @return $this
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
