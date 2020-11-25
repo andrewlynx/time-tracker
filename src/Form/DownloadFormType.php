@@ -4,14 +4,16 @@ namespace App\Form;
 
 use App\Entity\Task;
 use App\Form\Extensions\DatePickerType;
+use App\Service\Export\FileExportFactory;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class TaskType extends AbstractType
+class DownloadFormType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -19,28 +21,28 @@ class TaskType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Task $task */
-        $task = $options['data'];
-
         $builder
-            ->add('title', TextType::class, [
-                'label' => 'Task Title',
-            ])
-            ->add('comment', TextareaType::class, [
-                'label' => 'Comment',
-                'required' => false,
-            ])
-            ->add('date', DatePickerType::class, [
-                'label' => 'Date',
+            ->add('date_from', DatePickerType::class, [
+                'label' => 'Start Date',
                 'format' => 'yyyy-MM-dd',
                 'input' => 'string',
                 'input_format' => 'Y-m-d',
             ])
-            ->add('timeSpent', IntegerType::class, [
-                'label' => 'Spent time in minutes',
+            ->add('date_to', DatePickerType::class, [
+                'label' => 'End Date',
+                'format' => 'yyyy-MM-dd',
+                'input' => 'string',
+                'input_format' => 'Y-m-d',
+            ])
+            ->add('type', ChoiceType::class, [
+                'choices' => FileExportFactory::FORMATS,
+                'choice_label' => static function (string $choice): string {
+                    return $choice;
+                },
             ])
             ->add('submit', SubmitType::class, [
-                'label' => $task->getId() === null ? 'Add task' : 'Update task',
-            ]);
+                'label' => 'Download',
+            ])
+            ->setAction($options['data']['action']);
     }
 }

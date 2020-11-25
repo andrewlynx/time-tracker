@@ -4,12 +4,20 @@
 
 {% block body %}
     <a href="{{ path('task_create') }}" class="btn btn-default">Create new Task</a>
+    <a class="btn btn-default" data-toggle="collapse" href="#exportData" role="button" aria-expanded="false" aria-controls="exportData">
+        Export
+    </a>
+    <div class="collapse row" id="exportData">
+        <div class="col-md-4">
+            {{ form(download) }}
+        </div>
+    </div>
     <hr>
     <table width="100%">
         <thead>
             <th>Title</th>
             <th>Date</th>
-            <th>Spent Time</th>
+            <th>Spent Time, min</th>
             <th></th>
             <th></th>
             <th></th>

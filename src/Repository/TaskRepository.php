@@ -4,10 +4,10 @@ namespace App\Repository;
 
 use App\Entity\Task;
 use App\Entity\User;
+use App\Service\PaginatorFactory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Pagerfanta;
-use PaginatorFactory;
 
 /**
  * @method Task|null find($id, $lockMode = null, $lockVersion = null)
@@ -38,5 +38,27 @@ class TaskRepository extends ServiceEntityRepository
             ->setParameter('user', $user);
 
         return PaginatorFactory::createPaginator($qb->getQuery(), $page);
+    }
+
+    /**
+     * @param User $user
+     * @param string $dateFrom
+     * @param string $dateTo
+     *
+     * @return array
+     */
+    public function findByDateRange(User $user, string $dateFrom, string $dateTo): array
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->Where('t.user = :user')
+            ->andWhere('t.date >= :dateFrom')
+            ->andWhere('t.date <= :dateTo')
+            ->setParameters([
+                'user' => $user,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+            ]);
+
+        return $qb->getQuery()->getResult();
     }
 }

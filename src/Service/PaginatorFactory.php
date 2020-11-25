@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Service;
+
 use Doctrine\ORM\Query;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
@@ -13,7 +15,7 @@ class PaginatorFactory
      *
      * @return Pagerfanta<mixed>
      */
-    public static function createPaginator(Query $query, int $page, int $itemsPerPage = 5): Pagerfanta
+    public static function createPaginator(Query $query, int $page, int $itemsPerPage = 6): Pagerfanta
     {
         $paginator = new Pagerfanta(new QueryAdapter($query));
         $paginator->setMaxPerPage($itemsPerPage);

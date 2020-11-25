@@ -4,15 +4,20 @@ namespace App\Controller;
 
 use App\Constant\PaginatorConstant;
 use App\Entity\Task;
+use App\Form\DownloadFormType;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Service\Export\FileExportFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 
 /**
@@ -38,6 +43,7 @@ class TaskController extends AbstractController
             [
                 'tasks' => $tasks,
                 'forms' => $this->getDeleteFormViews($tasks),
+                'download' => $this->getDownloadForm()->createView(),
             ],
         );
     }
@@ -84,7 +90,10 @@ class TaskController extends AbstractController
      */
     public function view(Task $task): Response
     {
-        //@todo exception or redirect if it's not user's task
+        if ($task->getUser() !== $this->getUser()) {
+            throw new AccessDeniedException();
+        }
+
         return $this->render(
             'task/view.html.twig',
             [
@@ -103,7 +112,10 @@ class TaskController extends AbstractController
      */
     public function edit(Task $task, Request $request): Response
     {
-        //@todo exception or redirect if it's not user's task
+        if ($task->getUser() !== $this->getUser()) {
+            throw new AccessDeniedException();
+        }
+
         $form = $this->createForm(TaskType::class, $task)
             ->handleRequest($request);
 
@@ -132,7 +144,10 @@ class TaskController extends AbstractController
      */
     public function delete(Task $task, Request $request): RedirectResponse
     {
-        //@todo exception or redirect if it's not user's task
+        if ($task->getUser() !== $this->getUser()) {
+            throw new AccessDeniedException();
+        }
+
         $form = $this->getDeleteForm($task)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -145,6 +160,34 @@ class TaskController extends AbstractController
         }
 
         throw new InvalidCsrfTokenException();
+    }
+
+    /**
+     * @Route("export", name="export")
+     *
+     * @param Request        $request
+     * @param TaskRepository $taskRepository
+     *
+     * @return Response
+     */
+    public function export(Request $request, TaskRepository $taskRepository): Response
+    {
+        $downloadForm = $this->getDownloadForm()->handleRequest($request);
+        if ($downloadForm->isSubmitted() && $downloadForm->isValid()) {
+            $tasks = $taskRepository->findByDateRange(
+                $this->getUser(),
+                $downloadForm->get('date_from')->getData(),
+                $downloadForm->get('date_to')->getData()
+            );
+
+            return FileExportFactory::getFileExporter($downloadForm->get('type')->getData())
+                ->setTasks($tasks)
+                ->export();
+        }
+
+        $this->addFlash('error', 'Your request cannot be processed correctly');
+
+        return $this->redirectToRoute('task_index');
     }
 
     /**
@@ -166,6 +209,11 @@ class TaskController extends AbstractController
             ->add('Delete', SubmitType::class);
     }
 
+    /**
+     * @param iterable $tasks
+     *
+     * @return array
+     */
     private function getDeleteFormViews(iterable $tasks): array
     {
         $views = [];
@@ -174,5 +222,18 @@ class TaskController extends AbstractController
         }
 
         return $views;
+    }
+
+    /**
+     * @return FormInterface
+     */
+    private function getDownloadForm(): FormInterface
+    {
+        return $this->createForm(
+            DownloadFormType::class,
+            [
+                'action' => $this->get('router')->generate('task_export'),
+            ]
+        );
     }
 }

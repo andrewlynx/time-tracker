@@ -49,9 +49,9 @@ class Task
     private $user;
 
     /**
-     * @var float
+     * @var integer
      *
-     * @ORM\Column(type="decimal", scale=2)
+     * @ORM\Column(type="integer")
      */
     private $timeSpent;
 
@@ -124,19 +124,19 @@ class Task
     }
 
     /**
-     * @return float|null
+     * @return int|null
      */
-    public function getTimeSpent(): ?float
+    public function getTimeSpent(): ?int
     {
         return $this->timeSpent;
     }
 
     /**
-     * @param float $timeSpent
+     * @param int $timeSpent
      *
      * @return $this
      */
-    public function setTimeSpent(float $timeSpent): self
+    public function setTimeSpent(int $timeSpent): self
     {
         $this->timeSpent = $timeSpent;
 
