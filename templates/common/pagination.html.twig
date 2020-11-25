@@ -1,0 +1,5 @@
+{% if data is not empty %}
+    <div class="navigation mt-4 text-center">
+        {{ pagerfanta(data, 'twitter_bootstrap4') }}
+    </div>
+{% endif %}

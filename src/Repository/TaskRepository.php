@@ -6,6 +6,8 @@ use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Pagerfanta;
+use PaginatorFactory;
 
 /**
  * @method Task|null find($id, $lockMode = null, $lockVersion = null)
@@ -25,14 +27,16 @@ class TaskRepository extends ServiceEntityRepository
 
     /**
      * @param User $user
-     * @return array
+     * @param int $page
+     *
+     * @return Pagerfanta
      */
-    public function getUsersTasks(User $user): array
+    public function getUsersTasks(User $user, int $page = 1): Pagerfanta
     {
         $qb = $this->createQueryBuilder('t')
             ->Where('t.user = :user')
             ->setParameter('user', $user);
 
-        return $qb->getQuery()->getResult();
+        return PaginatorFactory::createPaginator($qb->getQuery(), $page);
     }
 }

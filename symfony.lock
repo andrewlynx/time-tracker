@@ -1,4 +1,7 @@
 {
+    "babdev/pagerfanta-bundle": {
+        "version": "v2.8.0"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.1"
     },
@@ -87,6 +90,9 @@
     "ocramius/proxy-manager": {
         "version": "2.1.1"
     },
+    "pagerfanta/pagerfanta": {
+        "version": "v2.5.1"
+    },
     "php": {
         "version": "7.4"
     },
@@ -168,6 +174,9 @@
     },
     "symfony/dependency-injection": {
         "version": "v4.4.16"
+    },
+    "symfony/deprecation-contracts": {
+        "version": "v2.2.0"
     },
     "symfony/doctrine-bridge": {
         "version": "v4.4.16"

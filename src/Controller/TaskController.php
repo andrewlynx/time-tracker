@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Constant\PaginatorConstant;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
@@ -22,13 +23,15 @@ class TaskController extends AbstractController
     /**
      * @Route("/", name="index")
      *
+     * @param Request $request
      * @param TaskRepository $taskRepository
      *
      * @return Response
      */
-    public function index(TaskRepository $taskRepository): Response
+    public function index(Request $request, TaskRepository $taskRepository): Response
     {
-        $tasks = $taskRepository->getUsersTasks($this->getUser());
+        $page = $request->query->get(PaginatorConstant::PAGE) ?? 1;
+        $tasks = $taskRepository->getUsersTasks($this->getUser(), $page);
 
         return $this->render(
             'task/index.html.twig',
@@ -81,6 +84,7 @@ class TaskController extends AbstractController
      */
     public function view(Task $task): Response
     {
+        //@todo exception or redirect if it's not user's task
         return $this->render(
             'task/view.html.twig',
             [
@@ -99,6 +103,7 @@ class TaskController extends AbstractController
      */
     public function edit(Task $task, Request $request): Response
     {
+        //@todo exception or redirect if it's not user's task
         $form = $this->createForm(TaskType::class, $task)
             ->handleRequest($request);
 
@@ -127,6 +132,7 @@ class TaskController extends AbstractController
      */
     public function delete(Task $task, Request $request): RedirectResponse
     {
+        //@todo exception or redirect if it's not user's task
         $form = $this->getDeleteForm($task)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
