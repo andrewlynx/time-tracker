@@ -41,9 +41,17 @@ class Task
     private $date;
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="user", nullable=false)
+     */
+    private $user;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(type="decimal", scale=2)
      */
     private $timeSpent;
 
@@ -116,21 +124,41 @@ class Task
     }
 
     /**
-     * @return int|null
+     * @return float|null
      */
-    public function getTimeSpent(): ?int
+    public function getTimeSpent(): ?float
     {
         return $this->timeSpent;
     }
 
     /**
-     * @param int $timeSpent
+     * @param float $timeSpent
      *
      * @return $this
      */
-    public function setTimeSpent(int $timeSpent): self
+    public function setTimeSpent(float $timeSpent): self
     {
         $this->timeSpent = $timeSpent;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return $this
+     */
+    public function setUser(User $user): Task
+    {
+        $this->user = $user;
 
         return $this;
     }

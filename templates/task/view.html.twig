@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create new task{% endblock %}
+
+{% block body %}
+    <table width="100%">
+        <thead>
+            <th></th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ task.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ task.title }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ task.date }}</td>
+            </tr>
+            <tr>
+                <th>Spent Time</th>
+                <td>{{ task.timeSpent }}</td>
+            </tr>
+            <tr>
+                <th>Comment</th>
+                <td>{{ task.comment }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}
