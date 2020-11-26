@@ -53,6 +53,7 @@ class TaskRepository extends ServiceEntityRepository
             ->Where('t.user = :user')
             ->andWhere('t.date >= :dateFrom')
             ->andWhere('t.date <= :dateTo')
+            ->orderBy('t.date')
             ->setParameters([
                 'user' => $user,
                 'dateFrom' => $dateFrom,
