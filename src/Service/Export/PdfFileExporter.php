@@ -2,34 +2,49 @@
 
 namespace App\Service\Export;
 
-use http\Exception\RuntimeException;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Dompdf\Dompdf;
+use Psr\Container\ContainerInterface;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
-class PdfFileExporter implements FileExportInterface
+class PdfFileExporter extends AbstractExporter implements FileExportInterface
 {
     /**
-     * @var array <Task>
+     * @var Environment
      */
-    private $tasks;
+    private $twig;
 
-    /**
-     * @param array $tasks
-     *
-     * @return $this
-     */
-    public function setTasks(array $tasks): FileExportInterface
+    public function __construct(ContainerInterface $container)
     {
-        $this->tasks = $tasks;
-
-        return $this;
+        $this->twig = $container->get('twig');
     }
 
-    public function export(): BinaryFileResponse
+    /**
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function export(): ?Response
     {
         if ($this->tasks === null) {
             throw new RuntimeException('Tasks should be set before export');
         }
 
-        dd($this->tasks);
+        $domPdf = new Dompdf();
+
+        $html = $this->twig->render('task/pdf/file.html.twig', [
+            'author' => $this->author,
+            'tasks' => $this->tasks,
+            'startDay' => $this->startDay,
+            'endDay' => $this->endDay,
+            'total' => $this->getTotalTime(),
+        ]);
+        $domPdf->loadHtml($html);
+        $domPdf->render();
+        $domPdf->stream($this->getFileName());
     }
 }

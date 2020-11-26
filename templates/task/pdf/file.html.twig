@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Tasks{% endblock %}</title>
+</head>
+<body>
+    <h3>Report for {{ startDay }} - {{ endDay }} (user {{ author }})</h3>
+    <table width="100%">
+        <thead>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Spent Time, min</th>
+            <th>Comment</th>
+        </thead>
+        <tbody>
+        {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.date }}</td>
+                <td>{{ task.timeSpent }}</td>
+                <td>{{ task.comment }}</td>
+            </tr>
+        {% else %}
+            {% include 'common/no-result.html.twig' only %}
+        {% endfor %}
+        </tbody>
+    </table>
+    <p>Total time: {{ total }}</p>
+</body>
+</html>

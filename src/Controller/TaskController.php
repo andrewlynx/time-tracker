@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
+use Throwable;
 
 /**
  * @Route("/task", name="task_")
@@ -165,29 +166,39 @@ class TaskController extends AbstractController
     /**
      * @Route("export", name="export")
      *
-     * @param Request        $request
-     * @param TaskRepository $taskRepository
+     * @param Request           $request
+     * @param TaskRepository    $taskRepository
+     * @param FileExportFactory $fileExportFactory
      *
      * @return Response
      */
-    public function export(Request $request, TaskRepository $taskRepository): Response
+    public function export(Request $request, TaskRepository $taskRepository, FileExportFactory $fileExportFactory): Response
     {
         $downloadForm = $this->getDownloadForm()->handleRequest($request);
         if ($downloadForm->isSubmitted() && $downloadForm->isValid()) {
-            $tasks = $taskRepository->findByDateRange(
-                $this->getUser(),
-                $downloadForm->get('date_from')->getData(),
-                $downloadForm->get('date_to')->getData()
-            );
+            try {
+                $startDay = $downloadForm->get('date_from')->getData();
+                $endDay = $downloadForm->get('date_to')->getData();
+                $tasks = $taskRepository->findByDateRange(
+                    $this->getUser(),
+                    $startDay,
+                    $endDay
+                );
 
-            return FileExportFactory::getFileExporter($downloadForm->get('type')->getData())
-                ->setTasks($tasks)
-                ->export();
+                $response = $fileExportFactory->getFileExporter($downloadForm->get('type')->getData())
+                    ->setTasks($tasks)
+                    ->setAuthor($this->getUser()->getUsername())
+                    ->setStartDate($startDay)
+                    ->setEndDate($endDay)
+                    ->export();
+            } catch (Throwable $e) {
+                $this->addFlash('error', 'Error occurred trying to generate the report');
+            }
+        } else {
+            $this->addFlash('error', 'Your request cannot be processed correctly');
         }
 
-        $this->addFlash('error', 'Your request cannot be processed correctly');
-
-        return $this->redirectToRoute('task_index');
+        return $response ?? $this->redirectToRoute('task_index');
     }
 
     /**

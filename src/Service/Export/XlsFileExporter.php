@@ -2,15 +2,10 @@
 
 namespace App\Service\Export;
 
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
-class XlsFileExporter implements FileExportInterface
+class XlsFileExporter extends AbstractExporter implements FileExportInterface
 {
-    /**
-     * @var array <Task>
-     */
-    private $tasks;
-
     /**
      * @param array $tasks
      *
@@ -23,7 +18,7 @@ class XlsFileExporter implements FileExportInterface
         return $this;
     }
 
-    public function export(): BinaryFileResponse
+    public function export(): ?Response
     {
         // TODO: Implement export() method.
     }

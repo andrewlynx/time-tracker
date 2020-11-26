@@ -15,22 +15,52 @@ class FileExportFactory
     ];
 
     /**
+     * @var PdfFileExporter
+     */
+    private $pdfFileExporter;
+
+    /**
+     * @var CsvFileExporter
+     */
+    private $csvFileExporter;
+
+    /**
+     * @var XlsFileExporter
+     */
+    private $xlsFileExporter;
+
+    /**
+     * @param PdfFileExporter $pdfFileExporter
+     * @param CsvFileExporter $csvFileExporter
+     * @param XlsFileExporter $xlsFileExporter
+     */
+    public function __construct(
+        PdfFileExporter $pdfFileExporter,
+        CsvFileExporter $csvFileExporter,
+        XlsFileExporter $xlsFileExporter
+    ) {
+        $this->pdfFileExporter = $pdfFileExporter;
+        $this->csvFileExporter = $csvFileExporter;
+        $this->xlsFileExporter = $xlsFileExporter;
+    }
+
+    /**
      * @param string $type
      *
      * @return FileExportInterface
      */
-    public static function getFileExporter(string $type): FileExportInterface
+    public function getFileExporter(string $type): FileExportInterface
     {
         switch ($type) {
             case self::FORMAT_PDF:
 
-                return new PdfFileExporter();
+                return $this->pdfFileExporter;
             case self::FORMAT_CSV:
 
-                return new CsvFileExporter();
+                return $this->csvFileExporter;
             case self::FORMAT_XLS:
 
-                return new XlsFileExporter();
+                return $this->xlsFileExporter;
             default:
                 throw new \InvalidArgumentException(sprintf('Unknown format for file export: %s', $type));
         }

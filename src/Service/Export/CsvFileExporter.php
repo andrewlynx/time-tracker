@@ -2,15 +2,15 @@
 
 namespace App\Service\Export;
 
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Entity\Task;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
-class CsvFileExporter implements FileExportInterface
+class CsvFileExporter extends AbstractExporter implements FileExportInterface
 {
-    /**
-     * @var array <Task>
-     */
-    private $tasks;
-
     /**
      * @param array $tasks
      *
@@ -23,8 +23,36 @@ class CsvFileExporter implements FileExportInterface
         return $this;
     }
 
-    public function export(): BinaryFileResponse
+    /**
+     * @return Response|null
+     */
+    public function export(): ?Response
     {
-        // TODO: Implement export() method.
+        if ($this->tasks === null) {
+            throw new RuntimeException('Tasks should be set before export');
+        }
+
+        $serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
+
+        $prepared = [];
+        /** @var Task $task */
+        foreach ($this->tasks as $task) {
+            $prepared[] = [
+                'Title' => $task->getTitle(),
+                'Date' => $task->getDate(),
+                'Spent Time, min' => $task->getTimeSpent(),
+                'Comment' => $task->getComment(),
+            ];
+        }
+        $prepared[] = [
+            'Title' => 'Total time',
+            'Spent Time, min' => $this->getTotalTime(),
+        ];
+
+        $response = new Response($serializer->encode($prepared, 'csv'));
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename='.$this->getFileName().'.csv');
+
+        return $response;
     }
 }

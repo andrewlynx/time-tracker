@@ -3,7 +3,7 @@
 namespace App\Service\Export;
 
 use App\Entity\Task;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 interface FileExportInterface
 {
@@ -15,7 +15,28 @@ interface FileExportInterface
     public function setTasks(array $tasks): self;
 
     /**
-     * @return BinaryFileResponse
+     * @param string $author
+     *
+     * @return $this
      */
-    public function export(): BinaryFileResponse;
+    public function setAuthor(string $author): self;
+
+    /**
+     * @param string $startDate
+     *
+     * @return $this
+     */
+    public function setStartDate(string $startDate): self;
+
+    /**
+     * @param string $endDate
+     *
+     * @return $this
+     */
+    public function setEndDate(string $endDate): self;
+
+    /**
+     * @return Response|null
+     */
+    public function export(): ?Response;
 }
