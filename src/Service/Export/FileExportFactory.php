@@ -53,13 +53,10 @@ class FileExportFactory
     {
         switch ($type) {
             case self::FORMAT_PDF:
-
                 return $this->pdfFileExporter;
             case self::FORMAT_CSV:
-
                 return $this->csvFileExporter;
             case self::FORMAT_XLS:
-
                 return $this->xlsFileExporter;
             default:
                 throw new \InvalidArgumentException(sprintf('Unknown format for file export: %s', $type));

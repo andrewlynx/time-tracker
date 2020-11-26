@@ -172,8 +172,11 @@ class TaskController extends AbstractController
      *
      * @return Response
      */
-    public function export(Request $request, TaskRepository $taskRepository, FileExportFactory $fileExportFactory): Response
-    {
+    public function export(
+        Request $request,
+        TaskRepository $taskRepository,
+        FileExportFactory $fileExportFactory
+    ): Response {
         $downloadForm = $this->getDownloadForm()->handleRequest($request);
         if ($downloadForm->isSubmitted() && $downloadForm->isValid()) {
             try {
