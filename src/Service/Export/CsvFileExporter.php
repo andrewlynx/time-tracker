@@ -2,7 +2,6 @@
 
 namespace App\Service\Export;
 
-use App\Entity\Task;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
@@ -34,22 +33,7 @@ class CsvFileExporter extends AbstractExporter implements FileExportInterface
 
         $serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
 
-        $prepared = [];
-        /** @var Task $task */
-        foreach ($this->tasks as $task) {
-            $prepared[] = [
-                'Title' => $task->getTitle(),
-                'Date' => $task->getDate(),
-                'Spent Time, min' => $task->getTimeSpent(),
-                'Comment' => $task->getComment(),
-            ];
-        }
-        $prepared[] = [
-            'Title' => 'Total time',
-            'Spent Time, min' => $this->getTotalTime(),
-        ];
-
-        $response = new Response($serializer->encode($prepared, 'csv'));
+        $response = new Response($serializer->encode($this->getPreparedArray(), 'csv'));
         $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set('Content-Disposition', 'attachment; filename='.$this->getFileName().'.csv');
 

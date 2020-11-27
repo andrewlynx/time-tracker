@@ -104,4 +104,31 @@ class AbstractExporter
 
         return sprintf('%s hour(s) %s minute(s)', intdiv($total, 60), $total % 60);
     }
+
+    /**
+     * @return array
+     */
+    protected function getPreparedArray(): array
+    {
+        if ($this->tasks === null) {
+            throw new RuntimeException('Tasks should be set before calculating totals');
+        }
+
+        $prepared = [];
+        /** @var Task $task */
+        foreach ($this->tasks as $task) {
+            $prepared[] = [
+                'Title' => $task->getTitle(),
+                'Date' => $task->getDate(),
+                'Spent Time, min' => $task->getTimeSpent(),
+                'Comment' => $task->getComment(),
+            ];
+        }
+        $prepared[] = [
+            'Title' => 'Total time',
+            'Spent Time, min' => $this->getTotalTime(),
+        ];
+
+        return $prepared;
+    }
 }

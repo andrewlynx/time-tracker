@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b55ed747399ab6c36ce162cfebd33a6",
+    "content-hash": "fb24c8f76acaef5d5af2bdf83c68825b",
     "packages": [
         {
             "name": "babdev/pagerfanta-bundle",
