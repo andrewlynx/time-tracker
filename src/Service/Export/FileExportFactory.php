@@ -17,17 +17,17 @@ class FileExportFactory
     /**
      * @var PdfFileExporter
      */
-    private $pdfFileExporter;
+    private PdfFileExporter $pdfFileExporter;
 
     /**
      * @var CsvFileExporter
      */
-    private $csvFileExporter;
+    private CsvFileExporter $csvFileExporter;
 
     /**
      * @var XlsFileExporter
      */
-    private $xlsFileExporter;
+    private XlsFileExporter $xlsFileExporter;
 
     /**
      * @param PdfFileExporter $pdfFileExporter

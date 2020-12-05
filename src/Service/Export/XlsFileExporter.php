@@ -9,6 +9,10 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class XlsFileExporter extends AbstractExporter implements FileExportInterface
 {
@@ -27,14 +31,11 @@ class XlsFileExporter extends AbstractExporter implements FileExportInterface
     /**
      * @return Response|null
      *
+     * @throws ExceptionInterface
      * @throws PhpOfficeException
      */
     public function export(): ?Response
     {
-        if ($this->tasks === null) {
-            throw new RuntimeException('Tasks should be set before export');
-        }
-
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle(sprintf('Report %s', $this->author));
@@ -52,5 +53,24 @@ class XlsFileExporter extends AbstractExporter implements FileExportInterface
         );
 
         return $response;
+    }
+
+    /**
+     * @return array
+     *
+     * @throws ExceptionInterface
+     */
+    private function getPreparedArray(): array
+    {
+        $serializer = new Serializer([new ObjectNormalizer()]);
+
+        return array_merge(
+            $serializer->normalize(
+                $this->tasks,
+                'array',
+                [AbstractNormalizer::ATTRIBUTES => self::EXPORT_FIELDS]
+            ),
+            [[$this->getTotalTime()]]
+        );
     }
 }

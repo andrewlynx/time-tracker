@@ -30,10 +30,6 @@ class PdfFileExporter extends AbstractExporter implements FileExportInterface
      */
     public function export(): ?Response
     {
-        if ($this->tasks === null) {
-            throw new RuntimeException('Tasks should be set before export');
-        }
-
         $domPdf = new Dompdf();
 
         $html = $this->twig->render('task/pdf/file.html.twig', [
@@ -45,6 +41,7 @@ class PdfFileExporter extends AbstractExporter implements FileExportInterface
         ]);
         $domPdf->loadHtml($html);
         $domPdf->render();
+
         $domPdf->stream($this->getFileName());
     }
 }

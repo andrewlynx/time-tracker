@@ -8,26 +8,27 @@ use RuntimeException;
 class AbstractExporter
 {
     public const DEFAULT_FILENAME = 'document';
+    public const EXPORT_FIELDS = ['title', 'comment', 'date', 'timeSpent'];
 
     /**
      * @var string
      */
-    protected $author;
+    protected string $author;
 
     /**
      * @var string
      */
-    protected $startDay;
+    protected string $startDay;
 
     /**
      * @var string
      */
-    protected $endDay;
+    protected string $endDay;
 
     /**
      * @var array <Task>
      */
-    protected $tasks;
+    protected array $tasks = [];
 
     /**
      * @param array $tasks
@@ -102,33 +103,6 @@ class AbstractExporter
             $total += $task->getTimeSpent();
         }
 
-        return sprintf('%s hour(s) %s minute(s)', intdiv($total, 60), $total % 60);
-    }
-
-    /**
-     * @return array
-     */
-    protected function getPreparedArray(): array
-    {
-        if ($this->tasks === null) {
-            throw new RuntimeException('Tasks should be set before calculating totals');
-        }
-
-        $prepared = [];
-        /** @var Task $task */
-        foreach ($this->tasks as $task) {
-            $prepared[] = [
-                'Title' => $task->getTitle(),
-                'Date' => $task->getDate(),
-                'Spent Time, min' => $task->getTimeSpent(),
-                'Comment' => $task->getComment(),
-            ];
-        }
-        $prepared[] = [
-            'Title' => 'Total time',
-            'Spent Time, min' => $this->getTotalTime(),
-        ];
-
-        return $prepared;
+        return sprintf('Total: %s hour(s) %s minute(s)', intdiv($total, 60), $total % 60);
     }
 }

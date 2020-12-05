@@ -17,28 +17,28 @@ class Task
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=64)
      */
-    private $title;
+    private string $title;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $comment;
+    private string $comment;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=16)
      */
-    private $date;
+    private string $date;
 
     /**
      * @var User
@@ -46,14 +46,14 @@ class Task
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="user", nullable=false)
      */
-    private $user;
+    private User $user;
 
     /**
      * @var integer
      *
      * @ORM\Column(type="integer")
      */
-    private $timeSpent;
+    private int $timeSpent;
 
     /**
      * @return int|null

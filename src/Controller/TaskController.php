@@ -194,7 +194,10 @@ class TaskController extends AbstractController
                     ->setEndDate($endDay)
                     ->export();
             } catch (Throwable $e) {
-                $this->addFlash('error', 'Error occurred trying to generate the report');
+                $this->addFlash(
+                    'error',
+                    sprintf('Error occurred trying to generate the report: %s', $e->getMessage())
+                );
             }
         } else {
             $this->addFlash('error', 'Your request cannot be processed correctly');
