@@ -163,7 +163,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("export", name="export")
+     * @Route("export", name="export", methods={"POST"})
      *
      * @param Request           $request
      * @param TaskRepository    $taskRepository
